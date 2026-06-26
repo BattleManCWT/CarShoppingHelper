@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+/* Reusable surface + control classes used across the input/result components. */
+@layer components {
+  .card {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .field-input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-right
+      text-sm tabular-nums text-slate-900 outline-none transition
+      focus:border-brand-500 focus:ring-2 focus:ring-brand-200
+      disabled:cursor-not-allowed disabled:bg-slate-100;
+  }
+
+  .field-label {
+    @apply text-sm font-medium text-slate-700;
+  }
+
+  .field-error {
+    @apply mt-1 text-xs text-red-600;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2
+      text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700
+      focus:outline-none focus:ring-2 focus:ring-brand-300 disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-lg border border-slate-300
+      bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition
+      hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200;
+  }
+}
