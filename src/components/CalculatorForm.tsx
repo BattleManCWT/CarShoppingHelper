@@ -78,8 +78,9 @@ export function CalculatorForm() {
           <VehicleNameRow />
           <VehicleTypeRow />
           <NumberInputRow
-            name="msrp"
-            label="Purchase price / MSRP"
+            name="otdPrice"
+            label="Out-the-door (OTD) price"
+            hint="What you'll actually pay, taxes and fees included"
             prefix="$"
             step={500}
           />
@@ -102,20 +103,9 @@ export function CalculatorForm() {
           />
         </InputSectionCard>
 
-        {/* 3. Taxes & fees */}
+        {/* 3. Ownership & usage */}
         <InputSectionCard
-          title="3. Taxes & fees"
-          description="One-time costs that build your out-the-door price."
-        >
-          <NumberInputRow name="salesTaxRate" label="Sales tax rate" suffix="%" step={0.25} max={20} />
-          <NumberInputRow name="titleFee" label="Title fee" prefix="$" step={5} />
-          <NumberInputRow name="registrationFee" label="Registration" prefix="$" step={5} />
-          <NumberInputRow name="dealerFees" label="Dealer / doc fees" prefix="$" step={25} />
-        </InputSectionCard>
-
-        {/* 4. Ownership & usage */}
-        <InputSectionCard
-          title="4. Ownership & usage"
+          title="3. Ownership & usage"
           description="How long you'll keep it and how much you drive."
           collapsible={false}
         >
@@ -147,9 +137,9 @@ export function CalculatorForm() {
           )}
         </InputSectionCard>
 
-        {/* 5. Recurring costs (advanced, collapsed by default) */}
+        {/* 4. Recurring costs (advanced, collapsed by default) */}
         <InputSectionCard
-          title="5. Recurring & repair costs"
+          title="4. Recurring & repair costs"
           description="Insurance, upkeep, tires, and a repair reserve."
           defaultCollapsed
         >
@@ -166,9 +156,9 @@ export function CalculatorForm() {
           <NumberInputRow name="annualRepairReserve" label="Annual repair reserve" prefix="$" step={50} />
         </InputSectionCard>
 
-        {/* 6. Resale & incentives (advanced) */}
+        {/* 5. Resale & incentives (advanced) */}
         <InputSectionCard
-          title="6. Resale & incentives"
+          title="5. Resale & incentives"
           description="Optional. Leave resale at 0 to use our depreciation estimate."
           defaultCollapsed
         >

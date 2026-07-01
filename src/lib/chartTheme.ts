@@ -3,7 +3,6 @@ import type { CostKey } from "./types";
 /** Stable color per cost category, reused across every chart for consistency. */
 export const COST_COLORS: Record<CostKey, string> = {
   depreciation: "#1e59f0",
-  taxesFees: "#7c3aed",
   financing: "#0891b2",
   insurance: "#0d9488",
   energy: "#f59e0b",

@@ -18,8 +18,7 @@ export function AssumptionsPanel() {
             What you enter
           </h3>
           <ul className="mt-2 space-y-1.5 text-sm text-slate-600">
-            <li>• Vehicle price, down payment, trade-in, APR and loan term</li>
-            <li>• Sales tax rate plus title, registration and dealer fees</li>
+            <li>• Out-the-door price, down payment, trade-in, APR and loan term</li>
             <li>• Ownership length, annual mileage and energy efficiency</li>
             <li>• Insurance, maintenance, tires and a repair reserve</li>
             <li>• Optional resale value and incentives / tax credits</li>
@@ -53,11 +52,12 @@ export function AssumptionsPanel() {
       </div>
 
       <div className="mt-5 rounded-lg bg-amber-50 p-4 text-xs text-amber-800">
-        <strong>Simplifications:</strong> sales tax is applied to price minus
-        trade-in; maintenance and insurance don&apos;t escalate with vehicle age;
-        depreciation uses a generic curve unless you override resale value; and
-        regional/credit-score variation isn&apos;t modeled. Adjust the inputs to
-        match your situation for the most accurate picture.
+        <strong>Simplifications:</strong> the out-the-door price is assumed to
+        already include sales tax and fees; maintenance and insurance
+        don&apos;t escalate with vehicle age; depreciation uses a generic curve
+        unless you override resale value; and regional/credit-score variation
+        isn&apos;t modeled. Adjust the inputs to match your situation for the
+        most accurate picture.
       </div>
     </section>
   );

@@ -18,7 +18,7 @@ export const calculatorSchema = z
     // Vehicle
     name: z.string().trim().min(1, "Give the vehicle a name").max(80),
     vehicleType: z.enum(["gas", "hybrid", "electric"]),
-    msrp: money().min(1, "Enter the vehicle price"),
+    otdPrice: money().min(1, "Enter the out-the-door price"),
 
     // Financing
     downPayment: money(),
@@ -29,12 +29,6 @@ export const calculatorSchema = z
       .int("Whole months only")
       .min(0, "Must be 0 or more")
       .max(120, "120 months max"),
-
-    // Taxes & fees
-    salesTaxRate: z.coerce.number().min(0).max(20, "Tax rate seems too high"),
-    titleFee: money(10_000),
-    registrationFee: money(10_000),
-    dealerFees: money(20_000),
 
     // Ownership & usage
     ownershipYears: z.coerce

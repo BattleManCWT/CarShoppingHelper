@@ -5,7 +5,7 @@
  * here from a `CalculatorInput`, which keeps the UI dumb and the math testable.
  *
  * Cost model (Edmunds / BTS inspired):
- *   TCO = depreciation + taxes&fees + financing(interest)
+ *   TCO = depreciation + financing(interest)
  *       + insurance + fuel/energy + maintenance + tires + repairs
  *       - incentives
  *
@@ -24,15 +24,14 @@ import type {
 } from "./types";
 
 /**
- * Default cumulative depreciation as a fraction of MSRP lost by the END of each
- * year. Rough industry shape: a steep first-year drop, ~60% lost by year 5.
- * Index 0 is "year 1". Extrapolated linearly beyond the table.
+ * Default cumulative depreciation as a fraction of OTD price lost by the END
+ * of each year. Rough industry shape: a steep first-year drop, ~60% lost by
+ * year 5. Index 0 is "year 1". Extrapolated linearly beyond the table.
  */
 const DEPRECIATION_CURVE = [0.2, 0.31, 0.42, 0.52, 0.6, 0.66, 0.71];
 
 const CATEGORY_META: Record<CostKey, { label: string; group: "fixed" | "variable" }> = {
   depreciation: { label: "Depreciation", group: "fixed" },
-  taxesFees: { label: "Taxes & Fees", group: "fixed" },
   financing: { label: "Financing (interest)", group: "fixed" },
   insurance: { label: "Insurance", group: "fixed" },
   energy: { label: "Fuel / Energy", group: "variable" },
@@ -41,7 +40,7 @@ const CATEGORY_META: Record<CostKey, { label: string; group: "fixed" | "variable
   repairs: { label: "Repairs", group: "variable" },
 };
 
-/** Cumulative fraction of MSRP lost by the end of `year` (1-based). */
+/** Cumulative fraction of OTD price lost by the end of `year` (1-based). */
 function curveLossFraction(year: number): number {
   if (year <= 0) return 0;
   const idx = Math.min(year, DEPRECIATION_CURVE.length) - 1;
@@ -58,22 +57,9 @@ function curveLossFraction(year: number): number {
 /* Purchase & financing                                                        */
 /* -------------------------------------------------------------------------- */
 
-/** Sales-tax base. Many states tax (price − trade-in); we follow that here. */
-export function taxableAmount(input: CalculatorInput): number {
-  return Math.max(0, input.msrp - input.tradeInValue);
-}
-
-export function salesTax(input: CalculatorInput): number {
-  return taxableAmount(input) * (input.salesTaxRate / 100);
-}
-
-export function totalFees(input: CalculatorInput): number {
-  return input.titleFee + input.registrationFee + input.dealerFees;
-}
-
-/** Full out-the-door price: vehicle + sales tax + fees. */
+/** Out-the-door price: what you'll actually pay, taxes and fees included. */
 export function outTheDoorPrice(input: CalculatorInput): number {
-  return input.msrp + salesTax(input) + totalFees(input);
+  return input.otdPrice;
 }
 
 /** Amount financed after cash down, trade equity, and cash incentives. */
@@ -147,7 +133,7 @@ export function financingSummary(input: CalculatorInput): FinancingSummary {
  * their expectation. Otherwise we use the curve directly.
  */
 export function depreciation(input: CalculatorInput, years: number): number {
-  const basis = input.msrp;
+  const basis = input.otdPrice;
   if (basis <= 0 || years <= 0) return 0;
 
   let scale = 1;
@@ -162,7 +148,7 @@ export function depreciation(input: CalculatorInput, years: number): number {
 
 /** Estimated resale value at the end of `years`. */
 export function resaleValue(input: CalculatorInput, years: number): number {
-  return Math.max(0, input.msrp - depreciation(input, years));
+  return Math.max(0, input.otdPrice - depreciation(input, years));
 }
 
 /* -------------------------------------------------------------------------- */
@@ -207,7 +193,6 @@ export function breakdownForHorizon(
 
   const lines: CostLine[] = [
     makeLine("depreciation", depreciation(input, years)),
-    makeLine("taxesFees", salesTax(input) + totalFees(input)),
     makeLine("financing", interestPaidWithin(input, months)),
     makeLine("insurance", input.annualInsurance * years),
     makeLine("energy", annualEnergyCost(input) * years),

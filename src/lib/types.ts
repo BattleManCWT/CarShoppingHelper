@@ -12,8 +12,8 @@ export type VehicleType = "gas" | "hybrid" | "electric";
 export interface VehicleInput {
   name: string;
   vehicleType: VehicleType;
-  /** Manufacturer suggested retail price (the price you negotiate from). */
-  msrp: number;
+  /** Out-the-door price — what you'll actually pay, taxes and fees included. */
+  otdPrice: number;
 }
 
 /** How the purchase is financed. Used for cash-flow and interest cost. */
@@ -23,15 +23,6 @@ export interface FinancingInput {
   /** Annual percentage rate, e.g. 6.5 for 6.5%. */
   apr: number;
   loanTermMonths: number;
-}
-
-/** One-time taxes and fees paid at purchase ("out-the-door" extras). */
-export interface FeesInput {
-  /** Sales tax rate as a percent, e.g. 7.25 for 7.25%. */
-  salesTaxRate: number;
-  titleFee: number;
-  registrationFee: number;
-  dealerFees: number;
 }
 
 /** Ongoing ownership + usage assumptions. */
@@ -74,7 +65,6 @@ export interface OwnershipInput {
 export interface CalculatorInput
   extends VehicleInput,
     FinancingInput,
-    FeesInput,
     OwnershipInput {}
 
 /** A single named cost line in the breakdown. */
@@ -88,7 +78,6 @@ export interface CostLine {
 
 export type CostKey =
   | "depreciation"
-  | "taxesFees"
   | "financing"
   | "insurance"
   | "energy"

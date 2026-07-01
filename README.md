@@ -1,11 +1,11 @@
 # Car TCO Calculator
 
-Estimate the **true total cost of owning a car** — not just MSRP or the monthly
-payment. The app models the full cost of ownership over **3 and 5 years**
-(plus your own horizon) across the mainstream categories used by Edmunds' True
-Cost to Own and the BTS fixed-vs-variable cost framework: depreciation,
-financing interest, taxes & fees, insurance, fuel/energy, maintenance, tires,
-and repairs — minus incentives.
+Estimate the **true total cost of owning a car** — not just the out-the-door
+price or the monthly payment. The app models the full cost of ownership over
+**3 and 5 years** (plus your own horizon) across the mainstream categories
+used by Edmunds' True Cost to Own and the BTS fixed-vs-variable cost
+framework: depreciation, financing interest, insurance, fuel/energy,
+maintenance, tires, and repairs — minus incentives.
 
 Built with **Next.js (App Router) · React · TypeScript · Tailwind ·
 React Hook Form + Zod · Recharts · Zustand**.
@@ -29,7 +29,7 @@ The app is organized around a strict separation between **cost math** and
   This is where every dollar figure originates, which makes the math trivially
   unit-testable.
 - **`src/lib/types.ts` — the contract.** Small, focused input groups
-  (`VehicleInput`, `FinancingInput`, `FeesInput`, `OwnershipInput`) plus the
+  (`VehicleInput`, `FinancingInput`, `OwnershipInput`) plus the
   result shapes (`HorizonBreakdown`, `ResultSummary`). The form, store, and
   charts all speak these types.
 - **`src/lib/schema.ts` — validation.** A Zod schema mirroring the input model,
@@ -53,7 +53,7 @@ form edits ─(RHF, validated by Zod)─► store.input ─(useMemo)─► calcu
 ### Cost model (avoiding double counting)
 
 ```
-TCO = depreciation + taxes&fees + financing(interest only)
+TCO = depreciation + financing(interest only)
     + insurance + fuel/energy + maintenance + tires + repairs
     - incentives
 ```
@@ -62,7 +62,8 @@ Financing contributes **only interest**, because loan principal and down
 payment are *how* you fund the car — the capital actually consumed is captured
 by depreciation (purchase basis − resale value). Key formulas:
 
-- **Out-the-door** = MSRP + sales tax + title + registration + dealer fees
+- **Out-the-door (OTD) price** is entered directly — it's what you'll actually
+  pay, taxes and fees already included, and is the depreciation/loan basis
 - **Loan amount** = OTD − down payment − trade-in − incentives
 - **Monthly payment** = standard fixed-rate amortization from APR & term
 - **Financing cost** = interest paid within your ownership window, walked from
@@ -71,8 +72,8 @@ by depreciation (purchase basis − resale value). Key formulas:
   enter a resale value it scales the curve to match at your ownership horizon
 - **Energy** = miles ÷ MPG × fuel price (gas/hybrid) or miles ÷ mi-per-kWh ×
   electricity price (EV)
-- **Fixed vs variable** = depreciation/financing/insurance/taxes&fees (fixed)
-  vs energy/maintenance/tires/repairs (usage-driven), per the BTS split
+- **Fixed vs variable** = depreciation/financing/insurance (fixed) vs
+  energy/maintenance/tires/repairs (usage-driven), per the BTS split
 
 See **Methodology & assumptions** in-app for the full list of simplifications.
 

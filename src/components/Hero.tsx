@@ -10,10 +10,10 @@ export function Hero() {
           What a car <span className="text-brand-200">really</span> costs you —
           not just the sticker price.
         </h1>
-        <p className="mt-5 max-w-2xl text-lg text-brand-100">
-          MSRP and the monthly payment only tell part of the story. This
-          calculator estimates your all-in cost of ownership over 3 and 5 years —
-          depreciation, financing, taxes &amp; fees, insurance, fuel or energy,
+        <p className="mt-5 max-w-2xl text-lg text-white/90">
+          The out-the-door price and the monthly payment only tell part of the
+          story. This calculator estimates your all-in cost of ownership over 3
+          and 5 years — depreciation, financing, insurance, fuel or energy,
           maintenance, tires, and repairs — so you can compare vehicles by what
           they actually cost to live with.
         </p>

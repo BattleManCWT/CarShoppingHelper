@@ -8,19 +8,13 @@ export const DEFAULT_INPUT: CalculatorInput = {
   // Vehicle
   name: "2024 Gasoline Sedan",
   vehicleType: "gas",
-  msrp: 32000,
+  otdPrice: 35440,
 
   // Financing
   downPayment: 4000,
   tradeInValue: 0,
   apr: 6.5,
   loanTermMonths: 60,
-
-  // Taxes & fees
-  salesTaxRate: 7.25,
-  titleFee: 75,
-  registrationFee: 350,
-  dealerFees: 695,
 
   // Ownership & usage
   ownershipYears: 5,
@@ -48,7 +42,7 @@ export const DEFAULT_EV_INPUT: CalculatorInput = {
   ...DEFAULT_INPUT,
   name: "2024 Electric Crossover",
   vehicleType: "electric",
-  msrp: 44000,
+  otdPrice: 48310,
   annualInsurance: 1900,
   annualMaintenance: 450,
   incentives: 7500,
