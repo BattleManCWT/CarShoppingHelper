@@ -17,6 +17,13 @@ export const calculatorSchema = z
   .object({
     // Vehicle
     name: z.string().trim().min(1, "Give the vehicle a name").max(80),
+    year: z.coerce
+      .number()
+      .int("Whole year only")
+      .min(1980, "Pick a model year")
+      .max(new Date().getFullYear() + 2, "That year is too far out"),
+    brand: z.string().trim().min(1, "Pick a brand"),
+    model: z.string().trim().min(1, "Pick a model"),
     vehicleType: z.enum(["gas", "hybrid", "electric"]),
     otdPrice: money().min(1, "Enter the out-the-door price"),
 

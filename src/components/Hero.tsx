@@ -1,16 +1,16 @@
 /** Intro hero. Frames TCO as long-term cost, not sticker price. */
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-brand-700 to-brand-600 text-white">
+    <section className="relative overflow-hidden bg-brand-900 bg-gradient-to-b from-brand-900 to-brand-800 text-white">
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <p className="mb-3 inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-medium uppercase tracking-wide">
           True Cost of Ownership
         </p>
-        <h1 className="max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
-          What a car <span className="text-brand-200">really</span> costs you —
+        <h1 className="max-w-3xl text-4xl font-bold leading-tight text-white sm:text-5xl">
+          What a car <span className="text-brand-100">really</span> costs you —
           not just the sticker price.
         </h1>
-        <p className="mt-5 max-w-2xl text-lg text-white/90">
+        <p className="mt-5 max-w-2xl text-lg text-white">
           The out-the-door price and the monthly payment only tell part of the
           story. This calculator estimates your all-in cost of ownership over 3
           and 5 years — depreciation, financing, insurance, fuel or energy,

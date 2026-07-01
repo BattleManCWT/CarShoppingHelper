@@ -6,7 +6,10 @@ import type { CalculatorInput } from "./types";
  */
 export const DEFAULT_INPUT: CalculatorInput = {
   // Vehicle
-  name: "2024 Gasoline Sedan",
+  name: "2024 Honda Accord",
+  year: 2024,
+  brand: "Honda",
+  model: "Accord",
   vehicleType: "gas",
   otdPrice: 35440,
 
@@ -40,7 +43,10 @@ export const DEFAULT_INPUT: CalculatorInput = {
  */
 export const DEFAULT_EV_INPUT: CalculatorInput = {
   ...DEFAULT_INPUT,
-  name: "2024 Electric Crossover",
+  name: "2024 Tesla Model Y",
+  year: 2024,
+  brand: "Tesla",
+  model: "Model Y",
   vehicleType: "electric",
   otdPrice: 48310,
   annualInsurance: 1900,

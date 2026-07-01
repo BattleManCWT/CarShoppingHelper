@@ -10,7 +10,14 @@ export type VehicleType = "gas" | "hybrid" | "electric";
 
 /** Identity + price basis for the vehicle. */
 export interface VehicleInput {
+  /** Display label, derived from year + brand + model. */
   name: string;
+  /** Model year (e.g. 2024). */
+  year: number;
+  /** Make, e.g. "Toyota". */
+  brand: string;
+  /** Model, e.g. "Camry". */
+  model: string;
   vehicleType: VehicleType;
   /** Out-the-door price — what you'll actually pay, taxes and fees included. */
   otdPrice: number;

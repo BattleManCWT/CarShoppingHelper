@@ -22,6 +22,7 @@ import type {
   HorizonBreakdown,
   ResultSummary,
 } from "./types";
+import { depreciationFactor } from "./vehicleData";
 
 /**
  * Default cumulative depreciation as a fraction of OTD price lost by the END
@@ -130,13 +131,15 @@ export function financingSummary(input: CalculatorInput): FinancingSummary {
  *
  * If the user supplied an `expectedResaleValue`, we honor it at their ownership
  * horizon and scale the curve's shape to match, so 3yr/5yr stay consistent with
- * their expectation. Otherwise we use the curve directly.
+ * their expectation. Otherwise we scale the baseline curve by a brand/model
+ * depreciation factor so the estimate reflects the selected vehicle.
  */
 export function depreciation(input: CalculatorInput, years: number): number {
   const basis = input.otdPrice;
   if (basis <= 0 || years <= 0) return 0;
 
-  let scale = 1;
+  // Default: how this brand/model holds value relative to an average car.
+  let scale = depreciationFactor(input.brand, input.model);
   if (input.expectedResaleValue > 0 && input.ownershipYears > 0) {
     const actualLoss = (basis - input.expectedResaleValue) / basis;
     const curveLoss = curveLossFraction(input.ownershipYears);

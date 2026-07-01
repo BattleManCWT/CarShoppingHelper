@@ -6,6 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { calculatorSchema, type CalculatorFormValues } from "@/lib/schema";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { DEFAULT_INPUT, DEFAULT_EV_INPUT } from "@/lib/defaults";
+import {
+  VEHICLE_BRANDS,
+  VEHICLE_CATALOG,
+  vehicleYears,
+  buildVehicleName,
+} from "@/lib/vehicleData";
 import { InputSectionCard } from "./InputSectionCard";
 import { NumberInputRow } from "./NumberInputRow";
 
@@ -75,7 +81,7 @@ export function CalculatorForm() {
           description="Start here — what are you buying and for how much?"
           collapsible={false}
         >
-          <VehicleNameRow />
+          <VehicleSelector />
           <VehicleTypeRow />
           <NumberInputRow
             name="otdPrice"
@@ -188,25 +194,92 @@ export function CalculatorForm() {
 
 /* --- Inline rows for the non-numeric vehicle fields --- */
 
-function VehicleNameRow() {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext<CalculatorFormValues>();
+const YEAR_OPTIONS = vehicleYears();
+
+/**
+ * Structured vehicle picker: Year / Brand / Model / Current age. Model options
+ * follow the chosen brand, and the human-readable `name` (used in results) is
+ * derived from the selections so the rest of the app stays unchanged.
+ */
+function VehicleSelector() {
+  const { register, watch, setValue, getValues } =
+    useFormContext<CalculatorFormValues>();
+
+  const year = watch("year");
+  const brand = watch("brand");
+  const model = watch("model");
+
+  const modelOptions = VEHICLE_CATALOG[brand] ?? [];
+
+  // Keep the model valid for the selected brand.
+  useEffect(() => {
+    if (modelOptions.length && !modelOptions.includes(getValues("model"))) {
+      setValue("model", modelOptions[0], { shouldValidate: true });
+    }
+  }, [brand, modelOptions, getValues, setValue]);
+
+  // Keep the derived display name in sync with the selections.
+  useEffect(() => {
+    setValue("name", buildVehicleName(year, brand, model), {
+      shouldValidate: true,
+    });
+  }, [year, brand, model, setValue]);
 
   return (
-    <div>
-      <label htmlFor="name" className="field-label">
-        Vehicle name
-      </label>
-      <input
-        id="name"
-        type="text"
-        placeholder="e.g. 2024 Honda Accord"
-        className="field-input mt-1 text-left"
-        {...register("name")}
-      />
-      {errors.name && <p className="field-error">{errors.name.message}</p>}
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div>
+          <label htmlFor="year" className="field-label">
+            Year
+          </label>
+          <select
+            id="year"
+            className="field-input mt-1 text-left"
+            {...register("year")}
+          >
+            {YEAR_OPTIONS.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="brand" className="field-label">
+            Brand
+          </label>
+          <select
+            id="brand"
+            className="field-input mt-1 text-left"
+            {...register("brand")}
+          >
+            {VEHICLE_BRANDS.map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="col-span-2 sm:col-span-1">
+          <label htmlFor="model" className="field-label">
+            Model
+          </label>
+          <select
+            id="model"
+            className="field-input mt-1 text-left"
+            {...register("model")}
+          >
+            {modelOptions.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
     </div>
   );
 }
