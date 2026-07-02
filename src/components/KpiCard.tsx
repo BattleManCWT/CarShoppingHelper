@@ -7,9 +7,13 @@ interface KpiCardProps {
 
 /** A single headline metric tile for the results dashboard. */
 export function KpiCard({ label, value, sublabel, accent }: KpiCardProps) {
+  // Tiles are narrow when 4-up; long text values (e.g. "Depreciation") need a
+  // smaller size than short currency figures to stay inside the card.
+  const valueSize = value.length > 8 ? "text-lg" : "text-2xl";
+
   return (
     <div
-      className={`card p-5 ${
+      className={`card min-w-0 p-4 sm:p-5 ${
         accent ? "border-brand-200 bg-brand-50" : ""
       }`}
     >
@@ -17,7 +21,7 @@ export function KpiCard({ label, value, sublabel, accent }: KpiCardProps) {
         {label}
       </p>
       <p
-        className={`mt-1 text-2xl font-bold tabular-nums ${
+        className={`mt-1 break-words font-bold leading-snug tabular-nums ${valueSize} ${
           accent ? "text-brand-700" : "text-slate-900"
         }`}
       >

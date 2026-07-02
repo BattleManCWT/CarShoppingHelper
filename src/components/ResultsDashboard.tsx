@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { calculateOwnership } from "@/lib/calculations";
 import { fmtCurrency, fmtCurrencyCents } from "@/lib/format";
+import type { CalculatorInput } from "@/lib/types";
 import { KpiCard } from "./KpiCard";
 import { ResultsTable } from "./ResultsTable";
 import { CostBreakdownChart } from "./charts/CostBreakdownChart";
@@ -14,6 +15,26 @@ import { FixedVariableChart } from "./charts/FixedVariableChart";
 export function ResultsDashboard() {
   const input = useCalculatorStore((s) => s.input);
 
+  // Nothing is committed until the user clicks "Estimate Cost".
+  if (!input) {
+    return (
+      <div className="card flex flex-col items-center justify-center gap-2 p-12 text-center">
+        <h2 className="text-lg font-semibold text-slate-700">
+          No estimate yet
+        </h2>
+        <p className="max-w-md text-sm text-slate-500">
+          Fill in the form above and click{" "}
+          <span className="font-medium text-slate-700">Estimate Cost</span> to
+          see the full cost-of-ownership breakdown and charts.
+        </p>
+      </div>
+    );
+  }
+
+  return <ResultsDashboardInner input={input} />;
+}
+
+function ResultsDashboardInner({ input }: { input: CalculatorInput }) {
   // Single source of truth: results are derived from the committed input.
   const result = useMemo(() => calculateOwnership(input), [input]);
 

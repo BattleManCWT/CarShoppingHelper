@@ -17,36 +17,25 @@ import { NumberInputRow } from "./NumberInputRow";
 
 /**
  * The full input form. Uses React Hook Form for editing state + Zod for
- * validation, and live-pushes valid values into the global store so the results
- * dashboard recomputes as you type. Form logic stays fully separate from the
- * cost math (which lives in `lib/calculations.ts`).
+ * validation. Values are only committed to the global store when the user
+ * clicks "Estimate Cost" — nothing recomputes while typing. Form logic stays
+ * fully separate from the cost math (which lives in `lib/calculations.ts`).
  */
 export function CalculatorForm() {
-  const input = useCalculatorStore((s) => s.input);
   const setInput = useCalculatorStore((s) => s.setInput);
 
   const methods = useForm<CalculatorFormValues>({
     resolver: zodResolver(calculatorSchema),
-    defaultValues: input,
+    defaultValues: DEFAULT_INPUT,
     mode: "onChange",
   });
 
-  const { watch, reset, getValues } = methods;
+  const { watch, reset, getValues, handleSubmit } = methods;
   const vehicleType = watch("vehicleType");
   const isElectric = vehicleType === "electric";
 
-  // Live-sync: whenever the form is valid, commit values to the store.
-  useEffect(() => {
-    const sub = watch((values) => {
-      const parsed = calculatorSchema.safeParse(values);
-      if (parsed.success) setInput(parsed.data);
-    });
-    return () => sub.unsubscribe();
-  }, [watch, setInput]);
-
   function applyPreset(preset: CalculatorFormValues) {
     reset(preset);
-    setInput(preset);
   }
 
   return (
@@ -54,7 +43,7 @@ export function CalculatorForm() {
       <form
         id="calculator"
         className="space-y-5"
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={handleSubmit((values) => setInput(values))}
       >
         {/* Quick presets */}
         <div className="flex flex-wrap items-center gap-2">
@@ -183,10 +172,18 @@ export function CalculatorForm() {
           />
         </InputSectionCard>
 
-        <p className="px-1 text-xs text-slate-400">
-          Results update automatically as you edit. Current vehicle:{" "}
-          <span className="font-medium text-slate-500">{getValues("name")}</span>.
-        </p>
+        <div className="flex items-center justify-between gap-4 px-1">
+          <p className="text-xs text-slate-400">
+            Current vehicle:{" "}
+            <span className="font-medium text-slate-500">
+              {getValues("name")}
+            </span>
+            .
+          </p>
+          <button type="submit" className="btn-primary">
+            Estimate Cost
+          </button>
+        </div>
       </form>
     </FormProvider>
   );

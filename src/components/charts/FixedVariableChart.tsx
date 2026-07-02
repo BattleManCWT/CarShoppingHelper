@@ -1,6 +1,13 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
 import type { HorizonBreakdown } from "@/lib/types";
 import { GROUP_COLORS } from "@/lib/chartTheme";
 import { fmtCurrency } from "@/lib/format";
@@ -27,6 +34,14 @@ export function FixedVariableChart({ breakdown }: { breakdown: HorizonBreakdown 
           <Tooltip
             formatter={(value: number, name: string) => [fmtCurrency(value), name]}
             contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0" }}
+          />
+          <Legend
+            verticalAlign="bottom"
+            iconType="circle"
+            iconSize={10}
+            formatter={(value: string) => (
+              <span className="text-sm text-slate-600">{value}</span>
+            )}
           />
         </PieChart>
       </ResponsiveContainer>
