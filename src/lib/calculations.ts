@@ -154,6 +154,25 @@ export function resaleValue(input: CalculatorInput, years: number): number {
   return Math.max(0, input.otdPrice - depreciation(input, years));
 }
 
+/**
+ * Study-based resale estimate for a vehicle, ignoring any user-entered resale
+ * override — used by the form to show what the engine will assume when the
+ * "Expected resale value" field is left at 0.
+ */
+export function estimateResaleForVehicle(
+  otdPrice: number,
+  brand: string,
+  model: string,
+  years: number,
+): number {
+  if (otdPrice <= 0 || years <= 0) return 0;
+  const loss = Math.min(
+    0.95,
+    curveLossFraction(years) * depreciationFactor(brand, model),
+  );
+  return Math.max(0, otdPrice * (1 - loss));
+}
+
 /* -------------------------------------------------------------------------- */
 /* Recurring & usage costs                                                     */
 /* -------------------------------------------------------------------------- */

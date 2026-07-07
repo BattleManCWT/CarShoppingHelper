@@ -47,7 +47,7 @@ A category is a `CostKey`. Touch all of: `types.ts` (`CostKey` union), `calculat
 
 ### Vehicle catalog & depreciation data
 
-`src/lib/vehicleData.ts` holds the curated brand→models catalog (drives the Section 1 dropdowns; brands alphabetized, models ordered roughly cars → SUVs → trucks → EVs) and per-brand/per-model depreciation multipliers. The engine's baseline depreciation curve (`DEPRECIATION_CURVE` in calculations.ts) is scaled by `depreciationFactor(brand, model)`: <1 holds value better, >1 depreciates faster. New brands should get a `BRAND_DEPRECIATION` entry or they silently fall back to the neutral 1.0.
+`src/lib/vehicleData.ts` holds the curated brand→models catalog (drives the Section 1 dropdowns; brands alphabetized, models ordered roughly cars → SUVs → trucks → EVs) and published 5-year depreciation data (`BRAND_FIVE_YEAR_DEPRECIATION` + `MODEL_FIVE_YEAR_DEPRECIATION`, calibrated to the iSeeCars 2026 study / KBB resale rankings; fractions of price lost after 5 years). `depreciationFactor(brand, model)` converts a vehicle's published figure to the OTD basis (÷ `OTD_MARKUP` for baked-in taxes/fees) and returns the scale that makes the engine's baseline curve (`DEPRECIATION_CURVE` in calculations.ts) hit that 5-year point: <1 holds value better than the baseline, >1 sheds it faster. New brands should get a `BRAND_FIVE_YEAR_DEPRECIATION` entry or they silently fall back to the industry-average 41.8% loss.
 
 ### Styling
 

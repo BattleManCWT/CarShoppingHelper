@@ -379,93 +379,160 @@ export function vehicleYears(now = new Date().getFullYear()): number[] {
 }
 
 /**
- * Relative depreciation factor per brand. 1.0 = the engine's baseline
- * depreciation curve (an average mainstream car). Below 1 = holds value better
- * (loses less); above 1 = depreciates faster than average. Rough,
- * resale-market-informed multipliers — not a guarantee for any single car.
+ * Published 5-year depreciation (fraction of the vehicle's price lost after
+ * 5 years), per brand. Calibrated to the iSeeCars 2026 depreciation study
+ * (950k used-car sales, Mar 2025 – Feb 2026; industry average 41.8%) and the
+ * KBB Best Resale Value rankings. Brand rows are informed estimates that
+ * average the brand's lineup; model rows below override them with the study's
+ * per-model figures. Estimates, not a guarantee for any single car.
  */
-export const BRAND_DEPRECIATION: Record<string, number> = {
-  Toyota: 0.85,
-  Honda: 0.88,
-  Subaru: 0.88,
-  Lexus: 0.9,
-  Porsche: 0.9,
-  Mazda: 0.95,
-  Jeep: 0.95,
-  Kia: 1.0,
-  Hyundai: 1.0,
-  GMC: 1.0,
-  Ram: 1.0,
-  Acura: 1.05,
-  Tesla: 1.05,
-  Ford: 1.05,
-  Chevrolet: 1.05,
-  Dodge: 1.05,
-  Mini: 1.1,
-  Mitsubishi: 1.1,
-  Volkswagen: 1.1,
-  Nissan: 1.12,
-  Buick: 1.15,
-  Chrysler: 1.15,
-  Genesis: 1.15,
-  Volvo: 1.15,
-  Cadillac: 1.2,
-  Infiniti: 1.2,
-  Lincoln: 1.2,
-  Rivian: 1.2,
-  "Land Rover": 1.25,
-  BMW: 1.28,
-  Audi: 1.28,
-  "Mercedes-Benz": 1.3,
-  Fiat: 1.3,
-  Polestar: 1.3,
-  "Alfa Romeo": 1.35,
-  Jaguar: 1.35,
-  Lucid: 1.35,
-  Maserati: 1.4,
+export const BRAND_FIVE_YEAR_DEPRECIATION: Record<string, number> = {
+  Porsche: 0.30,
+  Toyota: 0.33,
+  Honda: 0.34,
+  Subaru: 0.35,
+  Lexus: 0.37,
+  Mazda: 0.40,
+  GMC: 0.40,
+  Chevrolet: 0.42,
+  Ford: 0.42,
+  Jeep: 0.42,
+  Ram: 0.44,
+  Acura: 0.45,
+  Dodge: 0.45,
+  Hyundai: 0.45,
+  Kia: 0.45,
+  Mitsubishi: 0.48,
+  Nissan: 0.48,
+  Volkswagen: 0.48,
+  Buick: 0.50,
+  Chrysler: 0.50,
+  Mini: 0.50,
+  Cadillac: 0.52,
+  Volvo: 0.52,
+  BMW: 0.53,
+  Genesis: 0.53,
+  Audi: 0.54,
+  Lincoln: 0.54,
+  Fiat: 0.55,
+  Infiniti: 0.55,
+  "Mercedes-Benz": 0.55,
+  Rivian: 0.55,
+  Tesla: 0.55,
+  "Alfa Romeo": 0.58,
+  Jaguar: 0.58,
+  "Land Rover": 0.58,
+  Polestar: 0.60,
+  Lucid: 0.62,
+  Maserati: 0.62,
 };
 
 /**
- * Model-specific overrides for notable outliers (trucks/off-road that hold
- * value unusually well, and EVs that historically shed it fast). Keyed by
- * "Brand Model". When absent, the brand factor applies.
+ * Per-model 5-year depreciation, keyed by "Brand Model". The first group is
+ * taken directly from the iSeeCars 2026 study's best/worst-retention lists;
+ * the second group is informed estimates for well-known outliers the study
+ * didn't enumerate. When absent, the brand figure applies.
  */
-export const MODEL_DEPRECIATION: Record<string, number> = {
-  "Toyota Tacoma": 0.7,
-  "Toyota 4Runner": 0.72,
-  "Jeep Wrangler": 0.75,
-  "Toyota Land Cruiser": 0.75,
-  "Porsche 911": 0.75,
-  "Toyota Tundra": 0.8,
-  "Toyota RAV4": 0.8,
-  "Toyota Prius": 0.82,
-  "Ford F-150": 0.85,
-  "Honda CR-V": 0.85,
-  "Honda Ridgeline": 0.85,
-  "Jeep Gladiator": 0.85,
-  "Chevrolet Corvette": 0.85,
-  "Chevrolet Silverado": 0.9,
-  "GMC Sierra": 0.9,
-  "Ford Mustang Mach-E": 1.25,
-  "Hyundai Ioniq 5": 1.25,
-  "Kia EV6": 1.25,
-  "Audi e-tron": 1.3,
-  "GMC Hummer EV": 1.3,
-  "Volkswagen ID.4": 1.3,
-  "Chevrolet Bolt EV": 1.35,
-  "Jaguar I-PACE": 1.4,
-  "Nissan Leaf": 1.4,
-  "Tesla Model S": 1.15,
-  "Tesla Model X": 1.15,
+export const MODEL_FIVE_YEAR_DEPRECIATION: Record<string, number> = {
+  // iSeeCars 2026 — best value retention
+  "Porsche 718 Cayman": 0.096,
+  "Porsche 911": 0.111,
+  "Chevrolet Corvette": 0.187,
+  "Toyota Tacoma": 0.199,
+  "Toyota Tundra": 0.212,
+  "Honda Civic": 0.229,
+  "Subaru BRZ": 0.237,
+  "Toyota GR Supra": 0.24,
+  "Toyota RAV4": 0.252,
+  "Toyota 4Runner": 0.255,
+  "Lexus RC": 0.266,
+  "Ford Mustang": 0.268,
+  "Toyota Corolla": 0.276,
+  "Toyota Sienna": 0.285,
+  "Honda HR-V": 0.288,
+  "Honda CR-V": 0.289,
+  "Subaru Crosstrek": 0.291,
+  "Subaru Impreza": 0.292,
+  "Subaru WRX": 0.298,
+  "Ford Ranger": 0.302,
+  "Honda Accord": 0.305,
+  "Mazda MX-5 Miata": 0.315,
+  "Toyota Prius": 0.321,
+  // iSeeCars 2026 — worst value retention
+  "Nissan Leaf": 0.631,
+  "Infiniti QX80": 0.628,
+  "Volkswagen ID.4": 0.621,
+  "Tesla Model S": 0.62,
+  "Land Rover Range Rover": 0.617,
+  "BMW 7 Series": 0.616,
+  "Tesla Model X": 0.612,
+  "Ford Mustang Mach-E": 0.608,
+  "BMW 5 Series": 0.595,
+  "Infiniti QX60": 0.583,
+  "Land Rover Range Rover Sport": 0.583,
+  "Audi Q5": 0.582,
+  "Land Rover Discovery": 0.579,
+  "Tesla Model Y": 0.578,
+  "Audi A8": 0.576,
+  "Audi Q7": 0.572,
+  "BMW X5": 0.571,
+  "Cadillac Escalade": 0.57,
+  "Nissan Armada": 0.57,
+  "Audi A7": 0.565,
+  "Hyundai Kona Electric": 0.565,
+  "Jaguar F-PACE": 0.565,
+  "Ford Expedition": 0.563,
+  "Lincoln Navigator": 0.563,
+  // Informed estimates for notable outliers not in the study lists
+  "Toyota Land Cruiser": 0.30,
+  "Jeep Gladiator": 0.31,
+  "GMC Canyon": 0.33,
+  "Jeep Wrangler": 0.33,
+  "Honda Ridgeline": 0.34,
+  "Ford F-150": 0.40,
+  "Chevrolet Silverado": 0.40,
+  "GMC Sierra": 0.40,
+  "Hyundai Ioniq 5": 0.55,
+  "Kia EV6": 0.55,
+  "Chevrolet Bolt EV": 0.58,
+  "Ford F-150 Lightning": 0.58,
+  "GMC Hummer EV": 0.58,
+  "Jaguar I-PACE": 0.62,
 };
 
+/** Industry-average 5-year depreciation (iSeeCars 2026) — unknown-brand fallback. */
+const AVERAGE_FIVE_YEAR_DEPRECIATION = 0.418;
+
 /**
- * Depreciation factor for a specific vehicle: a model override if we have one,
- * otherwise the brand factor, otherwise the neutral baseline (1.0).
+ * Published figures are losses against the vehicle's price; our depreciation
+ * basis is the OTD price, which also bakes in ~8% taxes/fees that are gone the
+ * moment you buy. Resale dollars are the same either way, so residual-vs-OTD =
+ * residual-vs-price ÷ OTD_MARKUP.
+ */
+const OTD_MARKUP = 1.08;
+
+/** The engine's baseline curve loses 60% of OTD by year 5 (DEPRECIATION_CURVE). */
+const BASELINE_CURVE_FIVE_YEAR_LOSS = 0.6;
+
+/** Published 5-year loss for a vehicle: model override → brand → industry average. */
+export function publishedFiveYearLoss(brand: string, model: string): number {
+  const key = `${brand} ${model}`.trim();
+  return (
+    MODEL_FIVE_YEAR_DEPRECIATION[key] ??
+    BRAND_FIVE_YEAR_DEPRECIATION[brand] ??
+    AVERAGE_FIVE_YEAR_DEPRECIATION
+  );
+}
+
+/**
+ * Scale applied to the engine's baseline depreciation curve so that its 5-year
+ * point lands on this vehicle's study-based residual (converted to the OTD
+ * basis). <1 holds value better than the baseline curve; >1 sheds it faster.
  */
 export function depreciationFactor(brand: string, model: string): number {
-  const key = `${brand} ${model}`.trim();
-  return MODEL_DEPRECIATION[key] ?? BRAND_DEPRECIATION[brand] ?? 1;
+  const residualVsPrice = 1 - publishedFiveYearLoss(brand, model);
+  const lossVsOtd = 1 - residualVsPrice / OTD_MARKUP;
+  return lossVsOtd / BASELINE_CURVE_FIVE_YEAR_LOSS;
 }
 
 /** Vehicle age in years, derived from the model year (never negative). */

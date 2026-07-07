@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { calculatorSchema, type CalculatorFormValues } from "@/lib/schema";
+import { estimateResaleForVehicle } from "@/lib/calculations";
+import { fmtCurrency } from "@/lib/format";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { DEFAULT_INPUT, DEFAULT_EV_INPUT } from "@/lib/defaults";
 import {
@@ -43,6 +45,7 @@ export function CalculatorForm() {
       <form
         id="calculator"
         className="space-y-5"
+        noValidate
         onSubmit={handleSubmit((values) => setInput(values))}
       >
         {/* Quick presets */}
@@ -164,6 +167,7 @@ export function CalculatorForm() {
             prefix="$"
             step={500}
           />
+          <ResaleEstimateHint />
           <NumberInputRow
             name="incentives"
             label="Incentives / tax credits"
@@ -278,6 +282,37 @@ function VehicleSelector() {
       </div>
 
     </div>
+  );
+}
+
+/**
+ * Live resale estimate for the selected vehicle, shown under the resale field.
+ * Sourced from published depreciation studies (see lib/vehicleData.ts); tells
+ * the user what the engine assumes if they leave the field at 0.
+ */
+function ResaleEstimateHint() {
+  const { watch } = useFormContext<CalculatorFormValues>();
+
+  const brand = watch("brand");
+  const model = watch("model");
+  const otdPrice = Number(watch("otdPrice"));
+  const years = Number(watch("ownershipYears"));
+  const userResale = Number(watch("expectedResaleValue"));
+
+  const estimate = estimateResaleForVehicle(otdPrice, brand, model, years);
+  if (!Number.isFinite(estimate) || estimate <= 0) return null;
+
+  return (
+    <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
+      Based on resale-value studies, a {brand} {model} is typically worth{" "}
+      <span className="font-semibold text-slate-700">
+        ~{fmtCurrency(estimate)}
+      </span>{" "}
+      after {years} {years === 1 ? "year" : "years"}.
+      {userResale > 0
+        ? " Your value above overrides this estimate."
+        : " Leave the field at 0 to use this estimate."}
+    </p>
   );
 }
 
