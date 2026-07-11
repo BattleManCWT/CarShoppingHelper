@@ -65,6 +65,7 @@ export function outTheDoorPrice(input: CalculatorInput): number {
 
 /** Amount financed after cash down, trade equity, and cash incentives. */
 export function loanAmount(input: CalculatorInput): number {
+  if (input.paymentMethod === "cash") return 0; // no loan, no interest
   const financed =
     outTheDoorPrice(input) -
     input.downPayment -
@@ -126,26 +127,64 @@ export function financingSummary(input: CalculatorInput): FinancingSummary {
 /* Depreciation                                                                */
 /* -------------------------------------------------------------------------- */
 
+/** Curve loss at `year`, scaled for how the vehicle holds value, capped. */
+function scaledCurveLoss(year: number, scale: number): number {
+  return Math.min(0.95, curveLossFraction(year) * scale);
+}
+
+/**
+ * Fraction of the PURCHASE price lost `years` into ownership for a vehicle
+ * that is `ageYears` old at purchase (0 = new). A used car enters the curve
+ * at its current age — the steep early drop is already priced into what you
+ * paid — so its loss is the curve segment from `age` to `age + years`,
+ * re-based to the (already depreciated) purchase price.
+ */
+function ownershipLossFraction(
+  years: number,
+  ageYears: number,
+  scale: number,
+): number {
+  if (years <= 0) return 0;
+  if (ageYears <= 0) return scaledCurveLoss(years, scale);
+  const startLoss = scaledCurveLoss(ageYears, scale);
+  const endLoss = scaledCurveLoss(ageYears + years, scale);
+  if (startLoss >= 0.95) return 0;
+  return Math.min(0.95, Math.max(0, (endLoss - startLoss) / (1 - startLoss)));
+}
+
+/** Age at purchase in years: 0 for new cars, model-year based for used. */
+export function vehicleAgeYears(
+  input: Pick<CalculatorInput, "condition" | "year">,
+  now = new Date().getFullYear(),
+): number {
+  if (input.condition !== "used") return 0;
+  return Math.max(0, now - input.year);
+}
+
 /**
  * Depreciation (capital lost) over `years`.
  *
  * If the user supplied an `expectedResaleValue`, we honor it at their ownership
  * horizon and scale the curve's shape to match, so 3yr/5yr stay consistent with
  * their expectation. Otherwise we scale the baseline curve by a brand/model
- * depreciation factor so the estimate reflects the selected vehicle.
+ * depreciation factor so the estimate reflects the selected vehicle. Used cars
+ * enter the curve at their current age (see `ownershipLossFraction`).
  */
 export function depreciation(input: CalculatorInput, years: number): number {
   const basis = input.otdPrice;
   if (basis <= 0 || years <= 0) return 0;
 
+  const age = vehicleAgeYears(input);
   // Default: how this brand/model holds value relative to an average car.
-  let scale = depreciationFactor(input.brand, input.model);
+  const scale = depreciationFactor(input.brand, input.model);
+  let lossFraction = ownershipLossFraction(years, age, scale);
   if (input.expectedResaleValue > 0 && input.ownershipYears > 0) {
     const actualLoss = (basis - input.expectedResaleValue) / basis;
-    const curveLoss = curveLossFraction(input.ownershipYears);
-    if (curveLoss > 0) scale = actualLoss / curveLoss;
+    const horizonLoss = ownershipLossFraction(input.ownershipYears, age, scale);
+    if (horizonLoss > 0) {
+      lossFraction = Math.min(0.95, lossFraction * (actualLoss / horizonLoss));
+    }
   }
-  const lossFraction = Math.min(0.95, curveLossFraction(years) * scale);
   return Math.max(0, basis * lossFraction);
 }
 

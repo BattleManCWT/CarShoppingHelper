@@ -8,6 +8,10 @@
 
 export type VehicleType = "gas" | "hybrid" | "electric";
 
+export type VehicleCondition = "new" | "used";
+
+export type PaymentMethod = "cash" | "finance";
+
 /** Identity + price basis for the vehicle. */
 export interface VehicleInput {
   /** Display label, derived from year + brand + model. */
@@ -19,12 +23,19 @@ export interface VehicleInput {
   /** Model, e.g. "Camry". */
   model: string;
   vehicleType: VehicleType;
+  /**
+   * New vs used. Used cars enter the depreciation curve at their current age
+   * (derived from `year`), so they skip the steep early drop already priced in.
+   */
+  condition: VehicleCondition;
   /** Out-the-door price — what you'll actually pay, taxes and fees included. */
   otdPrice: number;
 }
 
 /** How the purchase is financed. Used for cash-flow and interest cost. */
 export interface FinancingInput {
+  /** Cash purchases have no loan: financing contributes zero interest. */
+  paymentMethod: PaymentMethod;
   downPayment: number;
   tradeInValue: number;
   /** Annual percentage rate, e.g. 6.5 for 6.5%. */
